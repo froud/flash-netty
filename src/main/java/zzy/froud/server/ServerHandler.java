@@ -6,7 +6,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import zzy.froud.protocol.Packet;
 import zzy.froud.protocol.PacketCodeC;
 import zzy.froud.protocol.request.LoginRequestPacket;
+import zzy.froud.protocol.request.MessageRequestPacket;
 import zzy.froud.protocol.response.LoginResponsePacket;
+import zzy.froud.protocol.response.MessageResponsePacket;
 
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -32,6 +34,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
             // 登录响应
             ByteBuf responseByteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), loginResponsePacket);
+            ctx.channel().writeAndFlush(responseByteBuf);
+        }else if (packet instanceof MessageRequestPacket){
+            // 处理消息
+            MessageRequestPacket messageRequestPacket = ((MessageRequestPacket) packet);
+            System.out.println(new Date() + ": 收到客户端消息: " + messageRequestPacket.getMessage());
+            MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
+            messageResponsePacket.setMessage("服务端回复【" + messageRequestPacket.getMessage() + "】");
+            ByteBuf responseByteBuf = PacketCodeC.INSTANCE.encode(ctx.alloc(), messageResponsePacket);
             ctx.channel().writeAndFlush(responseByteBuf);
         }
 
