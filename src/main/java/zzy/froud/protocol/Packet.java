@@ -1,4 +1,4 @@
-package zzy.froud.protocol.command;
+package zzy.froud.protocol;
 
 
 import com.alibaba.fastjson.annotation.JSONField;

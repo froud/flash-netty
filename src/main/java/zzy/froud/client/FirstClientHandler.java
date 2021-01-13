@@ -3,10 +3,14 @@ package zzy.froud.client;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.AttributeKey;
+import zzy.froud.protocol.Packet;
+import zzy.froud.protocol.PacketCodeC;
+import zzy.froud.protocol.request.LoginRequestPacket;
+import zzy.froud.protocol.response.LoginResponsePacket;
 
 import java.nio.charset.Charset;
 import java.util.Date;
+import java.util.UUID;
 
 public class FirstClientHandler extends ChannelInboundHandlerAdapter  {
 
@@ -17,10 +21,21 @@ public class FirstClientHandler extends ChannelInboundHandlerAdapter  {
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println(new Date() + ": 客户端写出数据");
-        // 1. 获取数据
-        ByteBuf buffer = getByteBuf(ctx);
-        //2.发送数据
+        System.out.println(new Date() + ": 客户端开始登录");
+
+        // 创建登录对象
+        LoginRequestPacket loginRequestPacket = LoginRequestPacket
+                .builder()
+                .userId(UUID.randomUUID().toString())
+                .username("zzy")
+                .password("1234567")
+                .build();
+
+
+        // 编码
+        ByteBuf buffer = PacketCodeC.INSTANCE.encode(ctx.alloc(), loginRequestPacket);
+
+        // 写数据
         ctx.channel().writeAndFlush(buffer);
     }
 
@@ -48,7 +63,15 @@ public class FirstClientHandler extends ChannelInboundHandlerAdapter  {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         ByteBuf byteBuf = (ByteBuf) msg;
-        System.out.println(new Date() + ": 客户端读到数据 -> " + byteBuf.toString(Charset.forName("utf-8")));
-
+        Packet packet = PacketCodeC.INSTANCE.decode(byteBuf);
+        if (packet instanceof LoginResponsePacket) {
+            //执行登录逻辑
+            LoginResponsePacket loginResponsePacket = (LoginResponsePacket) packet;
+            if (loginResponsePacket.isSuccess()) {
+                System.out.println(new Date() + ": 客户端登录成功");
+            } else {
+                System.out.println(new Date() + ": 客户端登录失败，原因：" + loginResponsePacket.getReason());
+            }
+        }
     }
 }
