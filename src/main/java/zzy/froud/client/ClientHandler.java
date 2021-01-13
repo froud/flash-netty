@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.UUID;
 
-public class FirstClientHandler extends ChannelInboundHandlerAdapter  {
+public class ClientHandler extends ChannelInboundHandlerAdapter  {
 
     /**
      * 这个方法会在客户端连接建立成功之后被调用

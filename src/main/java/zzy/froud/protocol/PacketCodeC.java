@@ -3,12 +3,14 @@ package zzy.froud.protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import zzy.froud.protocol.request.LoginRequestPacket;
+import zzy.froud.protocol.response.LoginResponsePacket;
 import zzy.froud.serialize.Serializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static zzy.froud.protocol.command.Command.LOGIN_REQUEST;
+import static zzy.froud.protocol.command.Command.LOGIN_RESPONSE;
 
 public class PacketCodeC {
 
@@ -21,6 +23,7 @@ public class PacketCodeC {
     static {
         packetTypeMap = new HashMap<>();
         packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
+        packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
 
         serializerMap = new HashMap<>();
         serializerMap.put(Serializer.DEFAULT.getSerializerAlgorithm(), Serializer.DEFAULT);

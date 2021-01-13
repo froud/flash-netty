@@ -11,7 +11,7 @@ import zzy.froud.protocol.response.LoginResponsePacket;
 import java.nio.charset.Charset;
 import java.util.Date;
 
-public class FirstServerHandler extends ChannelInboundHandlerAdapter {
+public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
