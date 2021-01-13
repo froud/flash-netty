@@ -1,4 +1,4 @@
-package zzy.froud;
+package zzy.froud.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
@@ -16,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 public class NettyClient {
 
     private static final int MAX_RETRY = 20;
+    private static final int PORT = 20000;
+    private static final String HOST= "127.0.0.1";
+
     public static void main(String[] args) {
         NioEventLoopGroup workGroup = new NioEventLoopGroup();
 
@@ -29,8 +32,9 @@ public class NettyClient {
                 //3.IO 处理逻辑
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        //指定老连接数据读写逻辑
+                        ch.pipeline().addLast(new FirstClientHandler());
                     }
                 })
                 .attr(AttributeKey.newInstance("clientName"), "myClient")//给客户端的 NioSocketChannel 绑定属性, 通过 channel.attr()
@@ -39,13 +43,13 @@ public class NettyClient {
                 .option(ChannelOption.TCP_NODELAY,true);
 
         //4. 建立连接
-        connect(bootstrap,"192.168.2.32",20000,MAX_RETRY);
+        connect(bootstrap,HOST,PORT,MAX_RETRY);
 
     }
 
 
     private static void connect( Bootstrap bootstrap, String host, int port,int retry) {
-        bootstrap.connect("192.168.2.32",20000).addListener(future->{
+        bootstrap.connect(host,port).addListener(future->{
             if (future.isSuccess()){
                 System.out.println("连接成功!");
             }else if(retry == 0){

@@ -1,4 +1,4 @@
-package zzy.froud;
+package zzy.froud.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler;
@@ -12,9 +12,12 @@ import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.w3c.dom.Attr;
+import zzy.froud.client.FirstClientHandler;
 
 
 public class NettyServer {
+
+    private static final int PORT = 20000;
 
     public static void main(String[] args) {
 
@@ -38,14 +41,16 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY,true)// 表示是否开启Nagle算法 true表示关闭，false表示开启，通俗地说，如果要求高实时性，有数据发送时就马上发送，就关闭，如果需要减少发送次数减少网络交互，就开启。
                 .childHandler(new ChannelInitializer<NioSocketChannel>() { // 定义后续每条连接的数据读写，业务处理逻辑
                     @Override
-                    protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
+                    protected void initChannel(NioSocketChannel ch) throws Exception {
+                        // 指定连接数据读写逻辑
+                        ch.pipeline().addLast(new FirstServerHandler());
                     }
                 });
-        bind(serverBootstrap,20000);
+        bind(serverBootstrap,PORT);
     }
 
 
-    private static void bind( final ServerBootstrap serverBootstrap , final  int port){
+    private static void bind( final ServerBootstrap serverBootstrap , final int port){
         serverBootstrap.bind(port).addListener(new GenericFutureListener<Future<? super Void>>() {
             @Override
             public void operationComplete(Future<? super Void> future) throws Exception {
