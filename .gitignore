@@ -110,3 +110,4 @@ flash-netty.iml
 target/
 src/main/resources/
 src/test/
+/netty-study.iml
